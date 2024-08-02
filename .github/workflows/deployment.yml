@@ -1,0 +1,25 @@
+name: deployment
+on:
+  pull_request:
+    branches: [ deploy ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: log
+        run: echo "deployment action built"
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Access to remote server with SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: $[{ secrets.TEST_DEPLOY_REMOTE_HOST }}
+          port: $[{ secrets.TEST_DEPLOY_REMOTE_SSH_PORT }}
+          username: $[{ secrets.TEST_DEPLOY_REMOTE_USER }}
+          password: $[{ secrets.TEST_DEPLOY_REMOTE_PASS }}
+          script:
+            cd path
+            git pull origin deploy
